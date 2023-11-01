@@ -15,14 +15,34 @@ export function useTokenMetadata() {
                 await Moralis.start({apiKey});
             }
 
-            const token_metadatas = await Moralis.EvmApi.token.getTokenMetadata(
+            /*const token_metadatas = await Moralis.EvmApi.token.getTokenMetadata(
                 {
                 chain: current_chain,
                 addresses: token_address_list,
                 }
             );
 
-            setTokens(token_metadatas.toJSON());
+            setTokens(token_metadatas.toJSON());*/
+            
+            const baseUrl = `https://deep-index.moralis.io/api/v2.2/erc20/metadata?chain=${current_chain}`;
+
+            let fullUrl = baseUrl;
+            token_address_list.forEach((address, index) => {
+              const addressParam = `&addresses%5B${index}%5D=${address}`;
+              fullUrl += addressParam;
+            });
+            
+            const response = await fetch(fullUrl, {
+              method: 'GET',
+              headers: {
+                Accept: 'application/json',
+                'X-API-Key': apiKey,
+              },
+            });
+            const data = await response.json();
+            setTokens(data);       
+
+            
         }catch(e){
             setMessage("Error fetching token metadata");
             console.log("Error fetching token metadata: ", e);

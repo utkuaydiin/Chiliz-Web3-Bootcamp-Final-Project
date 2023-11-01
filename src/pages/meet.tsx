@@ -2,11 +2,20 @@ import BackToHub from "@/components/BackToHub";
 import React from "react";
 import styles from "@/styles/Home.module.css";
 import Countdown from "react-countdown";
+import {formatBalance} from "@/util/formatBalance";
+import {useBalances} from "@/hooks/useBalances";
 
 function MeetingPage() {
-    const native = 0;
-    const isEligible = Number(native) > 0;
+    const {message, nativeBalance} = useBalances();
+
+    const native = 
+        nativeBalance && Number(nativeBalance.balance) > 1
+        ? formatBalance(nativeBalance.balance)
+        : 0;
+    const isEligible = Number(native) > 1;
     const countdownDate = new Date("2023-12-31T23:59:59");
+
+    if (message) return <p>{message}</p>;
 
     return (
         <main className={styles.main}>
